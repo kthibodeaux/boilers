@@ -1,0 +1,32 @@
+#!/usr/bin/ruby
+# vi: set ft=ruby :
+require 'erb'
+
+FILEPATH = ARGV.first
+abort unless FILEPATH.end_with?('.rb')
+
+@target_path, _, @target_filename = FILEPATH.rpartition('/')
+@target_filename = @target_filename.rpartition('.').first
+
+case FILEPATH
+when /app\/authorizers/
+  @template_filename = '_authorizer.rb.erb'
+  @target_path = @target_path.rpartition('authorizers').last
+when /app\/controllers/
+  @template_filename = '_controller.rb.erb'
+  @target_path = @target_path.rpartition('controllers').last
+when /app\/models/
+  @template_filename = '_model.rb.erb'
+  @target_path = @target_path.rpartition('models').last
+end
+
+@modules = @target_path.partition('/').last.split('/').map { |mod| mod.gsub('_', ' ').split(/(\W)/).map(&:capitalize).join.delete(' ') }.compact
+@camel_name = @target_filename.gsub('_', ' ').split(/(\W)/).map(&:capitalize).join.delete(' ')
+
+if @modules.empty?
+  @modules_and_class = @camel_name
+else
+  @modules_and_class = [ @modules.join('::'), @camel_name ].join('::')
+end
+
+puts ERB.new(File.read(".boilers/#{ @template_filename }")).result(binding)

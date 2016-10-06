@@ -1,0 +1,4 @@
+class <%= @modules_and_class %> < ActiveRecord::Base
+  include Tenantable
+  include Authority::Abilities
+end
