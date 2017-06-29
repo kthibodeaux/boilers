@@ -15,5 +15,5 @@ function BoilerBuilder()
   endif
 endfunction
 
-au BufNewFile,BufReadPost *.rb :call BoilerBuilder()
+au BufNewFile,BufReadPost *.rb silent! :call BoilerBuilder()
 ```
